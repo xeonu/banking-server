@@ -6,4 +6,6 @@ import xeonu.bankingserver.member.entity.Member;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer> {
+
+  public boolean existsMemberByLoginId(String loginId);
 }

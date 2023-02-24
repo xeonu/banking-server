@@ -1,4 +1,4 @@
-package xeonu.bankingserver.common.exception;
+package xeonu.bankingserver.common.exception.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,4 +10,8 @@ public class ErrorResponse {
 
   private HttpStatus httpStatus;
   private String message;
+
+  public static ErrorResponse of(HttpStatus httpStatus, String message) {
+    return new ErrorResponse(httpStatus, message);
+  }
 }
