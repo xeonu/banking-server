@@ -30,8 +30,9 @@ jobs:
       run: ./gradlew test
 
     - name: 단위테스트 결과 
+      if: always()
       uses: EnricoMi/publish-unit-test-result-action@v1
-      if: ${{ always() }}
       with:
-        files: build/test-results/**/*.xml
+        junit: '**/build/test-results/test/*.xml'
+        github_token: ${{ secrets.TOKEN }}
   
