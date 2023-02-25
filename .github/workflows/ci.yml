@@ -36,6 +36,4 @@ jobs:
       if: always()
       uses: EnricoMi/publish-unit-test-result-action@v1
       with:
-        junit: '**/build/test-results/test/*.xml'
-
-  
+        junit: '**/build/test-results/junit/junit.xml/*.xml'
