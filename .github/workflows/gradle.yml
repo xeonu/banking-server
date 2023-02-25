@@ -31,7 +31,7 @@ jobs:
 
     - name: 단위테스트 결과 
       uses: EnricoMi/publish-unit-test-result-action@v1
-      if: ${{ always() }}
+      if: always()
       with:
         files: build/test-results/**/*.xml
   
