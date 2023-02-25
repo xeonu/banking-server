@@ -36,4 +36,4 @@ jobs:
       uses: mikepenz/action-junit-report@v3
       if: success() || failure() 
       with:
-       report_paths: '${{ github.workspace }}/build/test-results/**/*.xml'
+       report_paths: '**/build/test-results/junit/junit.xml/*.xml'
