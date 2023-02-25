@@ -23,6 +23,9 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         
+    - name: gradlew 권한부여
+      run: chmod +x gradlew
+        
     - name: 빌드
       run: ./gradlew build -x test
       
