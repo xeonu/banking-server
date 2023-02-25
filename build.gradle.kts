@@ -35,13 +35,5 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    testLogging {
-        events("PASSED", "FAILED", "SKIPPED")
-        outputs.upToDateWhen { false }
-        showStandardStreams = true
-    }
-    reports {
-        junitXml.destination = file("$buildDir/test-results/test")
-    }
 }
 
