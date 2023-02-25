@@ -34,5 +34,5 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v1
       with:
         junit: '**/build/test-results/test/*.xml'
-        github_token: ${{ secrets.TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
   
