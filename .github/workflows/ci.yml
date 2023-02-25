@@ -45,3 +45,4 @@ jobs:
       if: always()
       with:
         files: '**/build/test-results/junit/junit.xml/*.xml'
+        github_token: ${{ secrets.PAT }}
