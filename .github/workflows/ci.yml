@@ -41,10 +41,3 @@ jobs:
       if: success() || failure() 
       with:
        report_paths: '**/build/test-results/junit/junit.xml/*.xml'
-       
-    - name: publish unit test results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
-      with:
-        files: '**/build/test-results/junit/junit.xml/*.xml'
-        github_token: ${{ secrets.PAT }}
