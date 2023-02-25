@@ -7,9 +7,11 @@ on:
     - 'develop'
     
 permissions:
-  contents: read
+  contents: write
   checks: write
   id-token: write
+  pull-requests: write
+  discussions: write
 
 jobs:
   build:
