@@ -7,7 +7,11 @@ on:
     - 'develop'
     
 permissions:
-  contents: read
+  contents: write
+  checks: write
+  id-token: write
+  pull-requests: write
+  discussions: write
 
 jobs:
   build:
@@ -23,6 +27,9 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         
+    - name: gradlew 권한부여
+      run: chmod +x gradlew
+        
     - name: 빌드
       run: ./gradlew build -x test
       
@@ -30,9 +37,7 @@ jobs:
       run: ./gradlew test
 
     - name: 단위테스트 결과 
-      if: always()
-      uses: EnricoMi/publish-unit-test-result-action@v1
+      uses: mikepenz/action-junit-report@v3
+      if: success() || failure() 
       with:
-        junit: '**/build/test-results/junit/junit.xml/*.xml'
-        github_token: ${{ secrets.TOKEN }}
-  
+       report_paths: '**/build/test-results/junit/junit.xml/*.xml'
