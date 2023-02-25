@@ -1,6 +1,5 @@
 plugins {
     java
-    jacoco
     id("org.springframework.boot") version "2.7.9-SNAPSHOT"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
 }
@@ -35,5 +34,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    reports {
+        junitXml.destination = file("${buildDir}/test-results/junit/junit.xml")
+    }
 }
 

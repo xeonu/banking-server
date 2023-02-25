@@ -4,4 +4,6 @@ spring:
     url: jdbc:mysql://localhost:3306/banking
     username: root
     password: Rlatjsdn1!
+  jpa:
+    open-in-view: false
 
