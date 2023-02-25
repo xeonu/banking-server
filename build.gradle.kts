@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "2.7.9-SNAPSHOT"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
 }
@@ -32,6 +33,15 @@ dependencies {
     testImplementation("com.h2database:h2")
 }
 
-tasks.withType<Test> {
+tasks.test {
     useJUnitPlatform()
+    testLogging {
+        events("PASSED", "FAILED", "SKIPPED")
+        outputs.upToDateWhen { false }
+        showStandardStreams = true
+    }
+    reports {
+        junitXml.destination = file("$buildDir/test-results/test")
+    }
 }
+
