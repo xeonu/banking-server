@@ -32,6 +32,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.h2database:h2")
+    testImplementation("it.ozimov:embedded-redis")
 }
 
 tasks.test {
