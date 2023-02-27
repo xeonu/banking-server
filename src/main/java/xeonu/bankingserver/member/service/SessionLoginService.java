@@ -17,6 +17,7 @@ public class SessionLoginService implements LoginService {
   @Override
   public void login(int id) {
     httpSession.setAttribute(LOGIN_KEY, id);
+    httpSession.setMaxInactiveInterval(40 * 60);
   }
 
   @Override
