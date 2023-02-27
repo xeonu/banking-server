@@ -1,12 +1,14 @@
 package xeonu.bankingserver.member.service;
 
 import static xeonu.bankingserver.member.exception.MemberErrorResponse.DUPLICATED_LOGIN_ID;
+import static xeonu.bankingserver.member.exception.MemberErrorResponse.INCORRECT_LOGIN_INFO;
 import static xeonu.bankingserver.member.exception.MemberErrorResponse.MEMBER_NOT_EXIST;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import xeonu.bankingserver.common.exception.BadRequestException;
+import xeonu.bankingserver.member.dto.LoginDto;
 import xeonu.bankingserver.member.dto.SignUpDto;
 import xeonu.bankingserver.member.entity.Member;
 import xeonu.bankingserver.member.repository.MemberRepository;
@@ -17,6 +19,7 @@ public class MemberService {
 
   private final MemberRepository repository;
   private final EncryptService encryptService;
+  private final LoginService loginService;
 
   /**
    * 회원가입을 수행합니다.
@@ -76,5 +79,52 @@ public class MemberService {
     }
 
     return member.get();
+  }
+
+  /**
+   * 특정 loginId를 가진 회원정보를 조회합니다.
+   *
+   * @param loginId 회원의 loginId
+   * @return 특정 loginId를 가진 회원정보
+   */
+  public Member getMemberByLoginId(String loginId) {
+    Optional<Member> member = repository.findByLoginId(loginId);
+    if (member.isEmpty()) {
+      throw new BadRequestException(MEMBER_NOT_EXIST);
+    }
+
+    return member.get();
+  }
+
+  /**
+   * 회원의 로그인을 수행합니다.
+   *
+   * @param loginDto loginId와 password가 포함된 로그인정보
+   */
+  public void login(LoginDto loginDto) {
+    String loginId = loginDto.getLoginId();
+    String plainPassword = loginDto.getPassword();
+
+    boolean isLoginIdExist = existsByLoginId(loginId);
+    if (!isLoginIdExist) {
+      throw new BadRequestException(INCORRECT_LOGIN_INFO);
+    }
+
+    Member member = getMemberByLoginId(loginId);
+    String encryptedPassword = member.getPassword();
+
+    boolean isPasswordMatch = encryptService.checkPassword(plainPassword, encryptedPassword);
+    if (!isPasswordMatch) {
+      throw new BadRequestException(INCORRECT_LOGIN_INFO);
+    }
+
+    loginService.login(member.getId());
+  }
+
+  /**
+   * 회원의 로그아웃을 수행합니다.
+   */
+  public void logout() {
+    loginService.logout();
   }
 }

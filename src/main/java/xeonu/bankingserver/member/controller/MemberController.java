@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import xeonu.bankingserver.member.dto.LoginDto;
 import xeonu.bankingserver.member.dto.SignUpDto;
 import xeonu.bankingserver.member.service.MemberService;
 
@@ -39,9 +40,29 @@ public class MemberController {
    *
    * @param loginId 회원의 로그인 아이디
    */
-  @GetMapping("/login-id/exists")
+  @GetMapping("/login-id/duplicated-check")
   @ResponseStatus(OK)
   public void loginIdDuplicatedCheck(@RequestParam("login-id") String loginId) {
     memberService.loginIdDuplicateCheck(loginId);
+  }
+
+  /**
+   * 로그인을 수행합니다.
+   *
+   * @param loginDto 아이디와 비밀번호가 포함된 로그인 정보
+   */
+  @PostMapping("/login")
+  @ResponseStatus(OK)
+  public void login(@RequestBody LoginDto loginDto) {
+    memberService.login(loginDto);
+  }
+
+  /**
+   * 로그아웃을 수행합니다.
+   */
+  @PostMapping("/logout")
+  @ResponseStatus(OK)
+  public void logout() {
+    memberService.logout();
   }
 }
