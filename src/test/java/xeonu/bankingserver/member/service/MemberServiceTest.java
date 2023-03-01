@@ -2,7 +2,6 @@ package xeonu.bankingserver.member.service;
 
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,11 +41,16 @@ public class MemberServiceTest {
     SignUpDto signUpDto = new SignUpDto("abcd1234", "password12!");
     String encryptedPassword = "encryptedPassword";
 
+    Member newMember = Member.builder().
+        loginId(signUpDto.getLoginId()).
+        password(encryptedPassword).
+        build();
+
     when(memberService.existsByLoginId(signUpDto.getLoginId())).thenReturn(false);
     when(encryptService.encrypt(signUpDto.getPassword())).thenReturn(encryptedPassword);
 
     memberService.signUp(signUpDto);
-    verify(repository).save(any(Member.class));
+    verify(repository).save(newMember);
   }
 
   @Test
@@ -100,7 +104,7 @@ public class MemberServiceTest {
 
     memberService.login(loginDto);
 
-    verify(loginService).login(1);
+    verify(loginService).login(storedMember.getId());
   }
 
   @Test
