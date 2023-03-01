@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import xeonu.bankingserver.common.entity.BaseEntity;
@@ -19,6 +20,7 @@ import xeonu.bankingserver.member.entity.Member;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class FriendRequest extends BaseEntity {
 
   @Id
