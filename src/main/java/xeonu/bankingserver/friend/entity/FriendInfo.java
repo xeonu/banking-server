@@ -1,17 +1,17 @@
-package xeonu.bankingserver.member.entity;
+package xeonu.bankingserver.friend.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import xeonu.bankingserver.common.entity.BaseEntity;
+import xeonu.bankingserver.member.entity.Member;
 
 @Entity
 @Getter
@@ -19,16 +19,15 @@ import xeonu.bankingserver.common.entity.BaseEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class Member extends BaseEntity {
+public class FriendInfo extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
-  @NotNull
-  @Size(min = 8, max = 16, message = "아이디는 8~16자로만 가입가능합니다.")
-  private String loginId;
+  @ManyToOne
+  private Member member;
 
-  @NotNull
-  private String password;
+  @ManyToOne
+  private Member friend;
 }

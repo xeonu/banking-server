@@ -30,7 +30,7 @@ public class MemberService {
     String loginId = signUpDto.getLoginId();
 
     if (existsByLoginId(loginId)) {
-      throw new BadRequestException(DUPLICATED_LOGIN_ID);
+      throw new BadRequestException(DUPLICATED_LOGIN_ID.getErrorResponse());
     }
 
     String password = encryptService.encrypt(signUpDto.getPassword());
@@ -51,7 +51,7 @@ public class MemberService {
     boolean isDuplicated = existsByLoginId(loginId);
 
     if (isDuplicated) {
-      throw new BadRequestException(DUPLICATED_LOGIN_ID);
+      throw new BadRequestException(DUPLICATED_LOGIN_ID.getErrorResponse());
     }
   }
 
@@ -75,7 +75,7 @@ public class MemberService {
     Optional<Member> member = repository.findById(id);
 
     if (member.isEmpty()) {
-      throw new BadRequestException(MEMBER_NOT_EXIST);
+      throw new BadRequestException(MEMBER_NOT_EXIST.getErrorResponse());
     }
 
     return member.get();
@@ -90,7 +90,7 @@ public class MemberService {
   public Member getMemberByLoginId(String loginId) {
     Optional<Member> member = repository.findByLoginId(loginId);
     if (member.isEmpty()) {
-      throw new BadRequestException(MEMBER_NOT_EXIST);
+      throw new BadRequestException(MEMBER_NOT_EXIST.getErrorResponse());
     }
 
     return member.get();
@@ -107,7 +107,7 @@ public class MemberService {
 
     boolean isLoginIdExist = existsByLoginId(loginId);
     if (!isLoginIdExist) {
-      throw new BadRequestException(INCORRECT_LOGIN_INFO);
+      throw new BadRequestException(INCORRECT_LOGIN_INFO.getErrorResponse());
     }
 
     Member member = getMemberByLoginId(loginId);
@@ -115,7 +115,7 @@ public class MemberService {
 
     boolean isPasswordMatch = encryptService.checkPassword(plainPassword, encryptedPassword);
     if (!isPasswordMatch) {
-      throw new BadRequestException(INCORRECT_LOGIN_INFO);
+      throw new BadRequestException(INCORRECT_LOGIN_INFO.getErrorResponse());
     }
 
     loginService.login(member.getId());
@@ -126,5 +126,17 @@ public class MemberService {
    */
   public void logout() {
     loginService.logout();
+  }
+
+  /**
+   * 로그인한 Member의 정보를 반환합니다.
+   *
+   * @return 로그인한 Member의 정보
+   */
+  public Member getLoginMember() {
+    Integer loginMemberId = loginService.getLoginMemberId();
+    Member member = getMemberById(loginMemberId);
+
+    return member;
   }
 }
