@@ -1,15 +1,17 @@
-package xeonu.bankingserver.member.entity;
+package xeonu.bankingserver.account.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import xeonu.bankingserver.common.entity.BaseEntity;
+import xeonu.bankingserver.member.entity.Member;
 
 @Entity
 @Getter
@@ -17,13 +19,16 @@ import xeonu.bankingserver.common.entity.BaseEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class Member extends BaseEntity {
+public class Account extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
-  private String loginId;
+  @ManyToOne
+  private Member owner;
 
-  private String password;
+  private String number;
+
+  private long balance;
 }
