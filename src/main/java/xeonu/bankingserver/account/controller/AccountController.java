@@ -57,6 +57,11 @@ public class AccountController {
     return accountService.getMyAccounts();
   }
 
+  /**
+   * 계좌이체를 합니다.
+   *
+   * @param transferDto 송금계좌, 입금계좌, 입금액이 포함된 정보
+   */
   @PostMapping("/transfer")
   @ResponseStatus(OK)
   public void transfer(@RequestBody @Validated TransferDto transferDto) {
