@@ -29,10 +29,8 @@ public class FriendInfoService {
   public void add(int friendId) {
     Member loginMember = memberService.getLoginMember();
     Member friend = memberService.getMemberById(friendId);
-    boolean alreadyFriend = repository.existsByMember_IdAndFriend_Id(loginMember.getId(),
-        friend.getId());
-    boolean alreadyFriendReverse = repository.existsByMember_IdAndFriend_Id(friend.getId(),
-        loginMember.getId());
+    boolean alreadyFriend = repository.existsByMemberAndFriend(loginMember, friend);
+    boolean alreadyFriendReverse = repository.existsByMemberAndFriend(friend, loginMember);
 
     if (alreadyFriend || alreadyFriendReverse) {
       throw new BadRequestException(FRIEND_ALREADY.getErrorResponse());
@@ -50,5 +48,17 @@ public class FriendInfoService {
 
     repository.save(friendInfo);
     repository.save(friendInfoReverse);
+  }
+
+  /**
+   * 로그인한 사용자와 특정 아이디의 사용자가 친구관계인지 확인합니다. 이 메소드는 로그인한 사용자의 친구만 확인 가능합니다.
+   *
+   * @param friend 친구의 정보
+   * @return 로그인한 사용자와 파라미터로 넘어온 사용자와의 친구여부
+   */
+  public boolean isFriend(Member friend) {
+    Member loginMember = memberService.getLoginMember();
+
+    return repository.existsByMemberAndFriend(loginMember, friend);
   }
 }

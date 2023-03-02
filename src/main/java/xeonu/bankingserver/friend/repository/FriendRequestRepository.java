@@ -6,15 +6,17 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import xeonu.bankingserver.friend.entity.AcceptedStatus;
 import xeonu.bankingserver.friend.entity.FriendRequest;
+import xeonu.bankingserver.member.entity.Member;
 
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Integer> {
 
-  boolean existsBySender_IdAndReceiver_Id(int senderId, int receiverId);
-
-  public List<FriendRequest> findFriendRequestBySender_IdAndAcceptedStatus(int senderId,
+  boolean existsBySenderAndReceiverAndAcceptedStatus(Member sender, Member receiver,
       AcceptedStatus acceptedStatus);
 
-  public List<FriendRequest> findFriendRequestByReceiver_IdAndAcceptedStatus(int receiverId,
+  public List<FriendRequest> findFriendRequestBySenderAndAcceptedStatus(Member sender,
+      AcceptedStatus acceptedStatus);
+
+  public List<FriendRequest> findFriendRequestByReceiverAndAcceptedStatus(Member receiver,
       AcceptedStatus acceptedStatus);
 
   @Modifying

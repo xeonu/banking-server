@@ -43,9 +43,9 @@ class FriendInfoServiceTest {
   public void add_Success() {
     when(memberService.getLoginMember()).thenReturn(loginMember);
     when(memberService.getMemberById(friend.getId())).thenReturn(friend);
-    when(repository.existsByMember_IdAndFriend_Id(loginMember.getId(), friend.getId()))
+    when(repository.existsByMemberAndFriend(loginMember, friend))
         .thenReturn(false);
-    when(repository.existsByMember_IdAndFriend_Id(friend.getId(), loginMember.getId()))
+    when(repository.existsByMemberAndFriend(friend, loginMember))
         .thenReturn(false);
 
     friendInfoService.add(friend.getId());
@@ -69,9 +69,9 @@ class FriendInfoServiceTest {
   public void add_AlreadyFriend() {
     when(memberService.getLoginMember()).thenReturn(loginMember);
     when(memberService.getMemberById(friend.getId())).thenReturn(friend);
-    when(repository.existsByMember_IdAndFriend_Id(loginMember.getId(), friend.getId()))
+    when(repository.existsByMemberAndFriend(loginMember, friend))
         .thenReturn(true);
-    when(repository.existsByMember_IdAndFriend_Id(friend.getId(), loginMember.getId()))
+    when(repository.existsByMemberAndFriend(friend, loginMember))
         .thenReturn(true);
 
     Assertions.assertThrows(BadRequestException.class,

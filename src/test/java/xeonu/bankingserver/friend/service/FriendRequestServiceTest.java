@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import xeonu.bankingserver.account.service.TransferLockService;
 import xeonu.bankingserver.alarm.service.AlarmService;
 import xeonu.bankingserver.common.exception.BadRequestException;
 import xeonu.bankingserver.friend.entity.FriendRequest;
@@ -38,6 +39,9 @@ class FriendRequestServiceTest {
   @Mock
   FriendInfoService friendInfoService;
 
+  @Mock
+  TransferLockService transferLockService;
+
   @InjectMocks
   FriendRequestService friendRequestService;
 
@@ -50,8 +54,8 @@ class FriendRequestServiceTest {
   public void send_Success() {
     when(memberService.getLoginMember()).thenReturn(sender);
     when(memberService.getMemberByLoginId(receiver.getLoginId())).thenReturn(receiver);
-    when(repository.existsBySender_IdAndReceiver_Id(sender.getId(), receiver.getId())).thenReturn(
-        false);
+    when(repository.existsBySenderAndReceiverAndAcceptedStatus(sender, receiver,
+        WAITING)).thenReturn(false);
     doNothing().when(alarmService).sendAlarmMessage(receiver.getId(),
         "member " + sender.getLoginId() + " send friend request!");
 
@@ -83,8 +87,8 @@ class FriendRequestServiceTest {
   public void send_AlreadySentFriend() {
     when(memberService.getLoginMember()).thenReturn(sender);
     when(memberService.getMemberByLoginId(receiver.getLoginId())).thenReturn(receiver);
-    when(repository.existsBySender_IdAndReceiver_Id(sender.getId(), receiver.getId())).thenReturn(
-        true);
+    when(repository.existsBySenderAndReceiverAndAcceptedStatus(sender, receiver,
+        WAITING)).thenReturn(true);
 
     assertThrows(BadRequestException.class, () -> friendRequestService.send(receiver.getLoginId()));
   }
@@ -96,7 +100,7 @@ class FriendRequestServiceTest {
 
     friendRequestService.getSentFriendRequests();
 
-    verify(repository).findFriendRequestBySender_IdAndAcceptedStatus(sender.getId(), WAITING);
+    verify(repository).findFriendRequestBySenderAndAcceptedStatus(sender, WAITING);
   }
 
   @Test
@@ -114,7 +118,7 @@ class FriendRequestServiceTest {
 
     friendRequestService.getReceivedFriendRequests();
 
-    verify(repository).findFriendRequestByReceiver_IdAndAcceptedStatus(receiver.getId(), WAITING);
+    verify(repository).findFriendRequestByReceiverAndAcceptedStatus(receiver, WAITING);
   }
 
   @Test
@@ -253,4 +257,5 @@ class FriendRequestServiceTest {
     assertThrows(BadRequestException.class,
         () -> friendRequestService.reject(friendRequest.getId()));
   }
+
 }
