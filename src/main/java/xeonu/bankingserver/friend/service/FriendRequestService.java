@@ -38,8 +38,8 @@ public class FriendRequestService {
     Member sender = memberService.getLoginMember();
     Member receiver = memberService.getMemberByLoginId(loginId);
 
-    boolean alreadySent = repository.existsBySender_IdAndReceiver_Id(sender.getId(),
-        receiver.getId());
+    boolean alreadySent = repository.existsBySenderAndReceiverAndAcceptedStatus(
+        sender, receiver, WAITING);
     if (alreadySent) {
       throw new BadRequestException(FRIEND_REQUEST_ALREADY_SENT.getErrorResponse());
     }
@@ -63,7 +63,7 @@ public class FriendRequestService {
   public List<FriendRequest> getSentFriendRequests() {
     Member member = memberService.getLoginMember();
 
-    return repository.findFriendRequestBySender_IdAndAcceptedStatus(member.getId(), WAITING);
+    return repository.findFriendRequestBySenderAndAcceptedStatus(member, WAITING);
   }
 
   /**
@@ -74,7 +74,7 @@ public class FriendRequestService {
   public List<FriendRequest> getReceivedFriendRequests() {
     Member member = memberService.getLoginMember();
 
-    return repository.findFriendRequestByReceiver_IdAndAcceptedStatus(member.getId(), WAITING);
+    return repository.findFriendRequestByReceiverAndAcceptedStatus(member, WAITING);
   }
 
   /**

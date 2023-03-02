@@ -38,7 +38,7 @@ public class FriendController {
    *
    * @param id friendRequest의 id
    */
-  @PostMapping("/requests/approve")
+  @PostMapping("/requests/accept")
   @ResponseStatus(OK)
   public void acceptRequest(@RequestParam("friend-request-id") int id) {
     friendRequestService.accept(id);

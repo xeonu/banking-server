@@ -5,12 +5,15 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import xeonu.bankingserver.account.dto.TransferDto;
 import xeonu.bankingserver.account.entity.Account;
 import xeonu.bankingserver.account.service.AccountService;
 
@@ -52,5 +55,11 @@ public class AccountController {
   @ResponseStatus(OK)
   public List<Account> getMyAccounts() {
     return accountService.getMyAccounts();
+  }
+
+  @PostMapping("/transfer")
+  @ResponseStatus(OK)
+  public void transfer(@RequestBody @Validated TransferDto transferDto) {
+    accountService.transfer(transferDto);
   }
 }
