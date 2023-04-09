@@ -226,7 +226,7 @@ class AccountServiceTest {
     when(friendInfoService.isFriend(receiver)).thenReturn(true);
     doNothing().when(transferLockService).unLock();
 
-    accountService.transfer(transferDto);
+    accountService.transferLockByRedis(transferDto);
 
     verify(repository).decreaseBalance(senderAccount, transferDto.getAmount());
     verify(repository).increaseBalance(receiverAccount, transferDto.getAmount());
@@ -240,7 +240,7 @@ class AccountServiceTest {
     doNothing().when(transferLockService).lockLimitTry(5);
     when(memberService.getLoginMember()).thenThrow(BadRequestException.class);
 
-    assertThrows(BadRequestException.class, () -> accountService.transfer(transferDto));
+    assertThrows(BadRequestException.class, () -> accountService.transferLockByRedis(transferDto));
   }
 
   @Test
@@ -250,7 +250,7 @@ class AccountServiceTest {
     when(memberService.getLoginMember()).thenReturn(sender);
     when(repository.findById(senderAccount.getId())).thenThrow(BadRequestException.class);
 
-    assertThrows(BadRequestException.class, () -> accountService.transfer(transferDto));
+    assertThrows(BadRequestException.class, () -> accountService.transferLockByRedis(transferDto));
   }
 
   @Test
@@ -261,7 +261,7 @@ class AccountServiceTest {
     when(repository.findById(senderAccount.getId())).thenReturn(ofNullable(senderAccount));
     when(repository.findById(receiverAccount.getId())).thenThrow(BadRequestException.class);
 
-    assertThrows(BadRequestException.class, () -> accountService.transfer(transferDto));
+    assertThrows(BadRequestException.class, () -> accountService.transferLockByRedis(transferDto));
   }
 
   @Test
@@ -273,7 +273,7 @@ class AccountServiceTest {
     when(repository.findById(receiverAccount.getId())).thenReturn(ofNullable(receiverAccount));
     when(friendInfoService.isFriend(receiver)).thenReturn(false);
 
-    assertThrows(BadRequestException.class, () -> accountService.transfer(transferDto));
+    assertThrows(BadRequestException.class, () -> accountService.transferLockByRedis(transferDto));
   }
 
   @Test
@@ -291,6 +291,7 @@ class AccountServiceTest {
     when(repository.findById(receiverAccount.getId())).thenReturn(ofNullable(receiverAccount));
     when(friendInfoService.isFriend(receiver)).thenReturn(true);
 
-    assertThrows(BadRequestException.class, () -> accountService.transfer(transferDtoMuchAmount));
+    assertThrows(BadRequestException.class,
+        () -> accountService.transferLockByRedis(transferDtoMuchAmount));
   }
 }
