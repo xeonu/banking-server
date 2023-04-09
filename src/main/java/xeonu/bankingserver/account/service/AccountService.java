@@ -10,10 +10,12 @@ import static xeonu.bankingserver.account.exception.AccountErrorResponse.ONLY_FR
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xeonu.bankingserver.account.dto.TransferDto;
 import xeonu.bankingserver.account.entity.Account;
+import xeonu.bankingserver.account.entity.dto.AlarmKafkaTopic;
 import xeonu.bankingserver.account.repository.AccountRepository;
 import xeonu.bankingserver.account.utility.AccountUtil;
 import xeonu.bankingserver.alarm.service.AlarmService;
@@ -31,6 +33,7 @@ public class AccountService {
   private final FriendInfoService friendInfoService;
   private final AlarmService alarmService;
   private final TransferLockService transferLockService;
+  private final KafkaTemplate<String, AlarmKafkaTopic> kafkaTemplate;
 
   /**
    * 계좌를 생성합니다.
@@ -149,10 +152,10 @@ public class AccountService {
 
       repository.decreaseBalance(senderAccount, amount);
       repository.increaseBalance(receiverAccount, amount);
+      alarmKafkaPub(receiverAccountId,
+          valueOf(amount) + "원이 입금되었습니다.");
     } finally {
       transferLockService.unLock();
-      alarmService.sendAlarmMessage(receiverAccountId,
-          valueOf(amount) + "원이 입금되었습니다.");
     }
   }
 
@@ -167,7 +170,6 @@ public class AccountService {
     int receiverAccountId = transferDto.getReceiverAccountId();
     long amount = transferDto.getAmount();
 
-    try {
       Account senderAccount = getAccount(senderAccountId);
       Account receiverAccount = getFriendAccount(receiverAccountId);
       Member receiver = receiverAccount.getOwner();
@@ -178,15 +180,29 @@ public class AccountService {
         throw new BadRequestException(ONLY_FRIEND_CAN_TRANSFER.getErrorResponse());
       }
 
-      if (senderAccount.getBalance() < amount) {
-        throw new BadRequestException(NOT_ENOUGH_BALANCE.getErrorResponse());
-      }
-
-      repository.decreaseBalanceByPessimisticLock(senderAccount, amount);
-      repository.increaseBalanceByPessimisticLock(receiverAccount, amount);
-    } finally {
-      alarmService.sendAlarmMessage(receiverAccountId,
-          valueOf(amount) + "원이 입금되었습니다.");
+    if (senderAccount.getBalance() < amount) {
+      throw new BadRequestException(NOT_ENOUGH_BALANCE.getErrorResponse());
     }
+
+    repository.decreaseBalanceByPessimisticLock(senderAccount, amount);
+    repository.increaseBalanceByPessimisticLock(receiverAccount, amount);
+    alarmKafkaPub(receiverAccountId,
+        valueOf(amount) + "원이 입금되었습니다.");
+  }
+
+  /**
+   * 알림서버용 kafka 토픽을 생성합니다.
+   *
+   * @param receiverAccountId 알림 수신자 id
+   * @param message           알림 메시지
+   */
+  public void alarmKafkaPub(int receiverAccountId, String message) {
+
+    AlarmKafkaTopic topic = AlarmKafkaTopic.builder()
+        .receiverId(receiverAccountId)
+        .message(message)
+        .build();
+
+    kafkaTemplate.send("alarm", topic);
   }
 }
