@@ -125,7 +125,7 @@ public class AccountService {
    * @param transferDto 송금계좌, 입금계좌, 이체액을 포함한 정보
    */
   @Transactional
-  public void transfer(TransferDto transferDto) {
+  public void transferLockByRedis(TransferDto transferDto) {
     int senderAccountId = transferDto.getSenderAccountId();
     int receiverAccountId = transferDto.getReceiverAccountId();
     long amount = transferDto.getAmount();
@@ -151,6 +151,40 @@ public class AccountService {
       repository.increaseBalance(receiverAccount, amount);
     } finally {
       transferLockService.unLock();
+      alarmService.sendAlarmMessage(receiverAccountId,
+          valueOf(amount) + "원이 입금되었습니다.");
+    }
+  }
+
+  /**
+   * 친구의 계좌로 이체합니다. 해당 메소드는 mysql의 pessimistic Lock을 이용하여 동시성 처리를 진행했습니다.
+   *
+   * @param transferDto 송금계좌, 입금계좌, 이체액을 포함한 정보
+   */
+  @Transactional
+  public void transferLockByPessimisticLock(TransferDto transferDto) {
+    int senderAccountId = transferDto.getSenderAccountId();
+    int receiverAccountId = transferDto.getReceiverAccountId();
+    long amount = transferDto.getAmount();
+
+    try {
+      Account senderAccount = getAccount(senderAccountId);
+      Account receiverAccount = getFriendAccount(receiverAccountId);
+      Member receiver = receiverAccount.getOwner();
+
+      boolean isFriend = friendInfoService.isFriend(receiver);
+
+      if (!isFriend) {
+        throw new BadRequestException(ONLY_FRIEND_CAN_TRANSFER.getErrorResponse());
+      }
+
+      if (senderAccount.getBalance() < amount) {
+        throw new BadRequestException(NOT_ENOUGH_BALANCE.getErrorResponse());
+      }
+
+      repository.decreaseBalanceByPessimisticLock(senderAccount, amount);
+      repository.increaseBalanceByPessimisticLock(receiverAccount, amount);
+    } finally {
       alarmService.sendAlarmMessage(receiverAccountId,
           valueOf(amount) + "원이 입금되었습니다.");
     }

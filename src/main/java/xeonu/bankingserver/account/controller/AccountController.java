@@ -58,13 +58,24 @@ public class AccountController {
   }
 
   /**
-   * 계좌이체를 합니다.
+   * 계좌이체를 합니다. (Redis 스핀락 이용)
    *
    * @param transferDto 송금계좌, 입금계좌, 입금액이 포함된 정보
    */
-  @PostMapping("/transfer")
+  @PostMapping("/transfer/redis-lock")
   @ResponseStatus(OK)
-  public void transfer(@RequestBody @Validated TransferDto transferDto) {
-    accountService.transfer(transferDto);
+  public void transferLockByRedis(@RequestBody @Validated TransferDto transferDto) {
+    accountService.transferLockByRedis(transferDto);
+  }
+
+  /**
+   * 계좌이체를 합니다. (MySql 비관적락 이용)
+   *
+   * @param transferDto 송금계좌, 입금계좌, 입금액이 포함된 정보
+   */
+  @PostMapping("/transfer/mysql-pessimistic-lock")
+  @ResponseStatus(OK)
+  public void transferLockByPessimisticLock(@RequestBody @Validated TransferDto transferDto) {
+    accountService.transferLockByPessimisticLock(transferDto);
   }
 }
