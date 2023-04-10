@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+    - 'feat/*'
+    - 'develop'
+    
+permissions:
+  contents: write
+  checks: write
+  id-token: write
+  pull-requests: write
+  discussions: write
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: JDK11 설치
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        
+    - name: gradlew 권한부여
+      run: chmod +x gradlew
+        
+    - name: 빌드
+      run: ./gradlew build -x test
+      
+    - name: 테스트
+      run: ./gradlew test
+
+    - name: 단위테스트 결과 
+      uses: mikepenz/action-junit-report@v3
+      if: success() || failure() 
+      with:
+       report_paths: '**/build/test-results/junit/junit.xml/*.xml'
